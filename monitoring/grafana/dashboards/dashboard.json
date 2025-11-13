@@ -1,0 +1,46 @@
+{
+  "dashboard": {
+    "title": "MTT Poker Solver Monitoring",
+    "tags": ["mtt", "poker", "solver"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP Requests Total",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "http_requests_total",
+            "legendFormat": "Total Requests"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "HTTP Errors",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "http_errors_total",
+            "legendFormat": "Total Errors"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Request Duration (p95)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "http_request_duration_seconds{quantile=\"0.95\"}",
+            "legendFormat": "p95 Duration"
+          }
+        ]
+      }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 16,
+    "version": 0
+  }
+}
+

@@ -10,8 +10,8 @@ RUN apk add --no-cache python3 make g++
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install ALL dependencies (including dev deps for building)
+RUN npm ci && npm cache clean --force
 
 # Copy TypeScript configuration
 COPY tsconfig.json ./
@@ -21,6 +21,9 @@ COPY src/ ./src/
 
 # Build the application
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm prune --production
 
 # Create logs directory
 RUN mkdir -p logs

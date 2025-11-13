@@ -1,0 +1,27 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Batch files should use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts should use LF
+*.sh text eol=lf
+
+# Windows script files
+*.ps1 text eol=crlf
+
+# Markdown files
+*.md text
+
+# JSON files
+*.json text
+
+# YAML files
+*.yml text
+*.yaml text
+
+# Docker files
+Dockerfile text
+docker-compose*.yml text
+

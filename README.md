@@ -29,46 +29,76 @@ A comprehensive Multi-Table Tournament poker solver with ICM calculations, hand 
 
 ## Quick Start
 
-### Using Docker (Recommended)
+### Prerequisites
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd mtt-poker-solver
+Before you begin, ensure you have:
+- **Node.js** 18+ ([Download](https://nodejs.org/))
+- **Docker Desktop** ([Download](https://www.docker.com/products/docker-desktop/)) - Recommended
+- **Git** (for cloning the repository)
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/sperry-entelech/mtt-solver.git
+cd mtt-solver
+```
+
+### Installation
+
+#### Option 1: Automated Installation (Windows)
+
+1. **Run the installation script:**
+   ```powershell
+   .\install-all.bat
    ```
 
-2. **Start the application:**
+#### Option 2: Manual Installation
+
+1. **Install backend dependencies:**
+   ```bash
+   cd backend
+   npm install
+   cd ..
+   ```
+
+2. **Install frontend dependencies:**
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+### Running the Application
+
+#### Using Docker (Recommended - Easiest)
+
+1. **Make sure Docker Desktop is running**
+
+2. **Start all services:**
    ```bash
    docker-compose up -d
    ```
 
-3. **Access the application:**
+3. **Wait 30 seconds, then run database migrations:**
+   ```bash
+   docker-compose exec backend npm run migration:migrate
+   ```
+
+4. **Access the application:**
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:3001
+   - Health Check: http://localhost:3001/health
    - API Documentation: http://localhost:3001/api
 
-### Development Setup
+#### Development Mode (Without Docker)
 
-#### Prerequisites
-- Node.js 18+
-- PostgreSQL 15+
-- Redis 7+
+See [INSTALLATION.md](./INSTALLATION.md) for detailed instructions.
 
-#### Backend Setup
-```bash
-cd backend
-npm install
-cp .env.example .env
-# Edit .env with your database credentials
-npm run dev
-```
+### Documentation
 
-#### Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
+- **[INSTALLATION.md](./INSTALLATION.md)** - Complete installation guide with troubleshooting
+- **[LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)** - Guide for developers
+- **[README.DEPLOYMENT.md](./README.DEPLOYMENT.md)** - Production deployment guide
 
 ## API Documentation
 
@@ -179,12 +209,20 @@ cd frontend && npm run build
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## Documentation
+
+- **[QUICK_START.md](./QUICK_START.md)** - Get started in 5 minutes
+- **[INSTALLATION.md](./INSTALLATION.md)** - Detailed installation guide
+- **[LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)** - Developer guide
+- **[README.DEPLOYMENT.md](./README.DEPLOYMENT.md)** - Production deployment
+
 ## Support
 
 For questions and support:
 - Open an issue on GitHub
 - Check the API documentation at `/api`
 - Review the comprehensive test suite for usage examples
+- See [INSTALLATION.md](./INSTALLATION.md) for troubleshooting
 
 ## Roadmap
 

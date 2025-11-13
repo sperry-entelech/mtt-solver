@@ -6,6 +6,9 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { initializeDatabase, closeDatabase } from './config/database';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { monitoringMiddleware, metricsHandler, healthCheckHandler } from './middleware/monitoring';
+import { migrationManager } from './config/migrations';
+import { initializeWebSocket } from './websocket/server';
 import { logger } from './utils/logger';
 
 // Import routes
@@ -14,6 +17,7 @@ import rangeRoutes from './routes/ranges';
 import icmRoutes from './routes/icm';
 import handRoutes from './routes/hands';
 import chartsRoutes from './routes/charts';
+import gtoRoutes from './routes/gto';
 
 // Load environment variables
 dotenv.config();
@@ -57,15 +61,16 @@ app.use(morgan('combined', { stream: { write: message => logger.info(message.tri
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Monitoring middleware (should be after other middleware but before routes)
+app.use(monitoringMiddleware);
+
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development',
-  });
-});
+app.get('/health', healthCheckHandler);
+
+// Metrics endpoint (for Prometheus)
+if (process.env.ENABLE_METRICS === 'true') {
+  app.get('/metrics', metricsHandler);
+}
 
 // API routes
 app.use('/api/solve', solverRoutes);
@@ -73,6 +78,7 @@ app.use('/api/ranges', rangeRoutes);
 app.use('/api/icm', icmRoutes);
 app.use('/api/hands', handRoutes);
 app.use('/api/charts', chartsRoutes);
+app.use('/api/gto', gtoRoutes);
 
 // API documentation endpoint
 app.get('/api', (req, res) => {
@@ -147,10 +153,29 @@ async function gracefulShutdown(signal: string) {
 const server = app.listen(PORT, async () => {
   try {
     await initializeDatabase();
+    
+    // Run migrations in production
+    if (process.env.NODE_ENV === 'production' || process.env.RUN_MIGRATIONS === 'true') {
+      try {
+        await migrationManager.migrate();
+        logger.info('Database migrations completed');
+      } catch (error) {
+        logger.error('Migration failed, continuing anyway', { error });
+      }
+    }
+    
+    // Initialize WebSocket server
+    initializeWebSocket(server);
+    logger.info('WebSocket server initialized');
+    
     logger.info(`MTT Poker Solver API server running on port ${PORT}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
     logger.info(`Health check: http://localhost:${PORT}/health`);
     logger.info(`API documentation: http://localhost:${PORT}/api`);
+    logger.info(`WebSocket server: ws://localhost:${PORT}`);
+    if (process.env.ENABLE_METRICS === 'true') {
+      logger.info(`Metrics endpoint: http://localhost:${PORT}/metrics`);
+    }
   } catch (error) {
     logger.error('Failed to start server:', error);
     process.exit(1);

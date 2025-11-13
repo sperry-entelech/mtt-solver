@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "ts-node src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
-    "test": "jest"
+    "start": "node dist/index.js",
+    "test": "jest",
+    "migration:create": "ts-node src/config/migrations.ts create",
+    "migration:migrate": "ts-node src/config/migrations.ts migrate",
+    "migration:rollback": "ts-node src/config/migrations.ts rollback"
   },
   "dependencies": {
     "@types/morgan": "^1.9.10",
@@ -20,6 +23,7 @@
     "morgan": "^1.10.1",
     "pg": "^8.11.3",
     "redis": "^4.6.10",
+    "socket.io": "^4.5.4",
     "winston": "^3.10.0"
   },
   "devDependencies": {
